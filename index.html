@@ -47,7 +47,7 @@
       </div>
 
       <div style="max-width: 500px; margin: 20px auto; padding: 15px; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-    <select 2000="" id="donationPicker" style="
+    <select id="mainPagePicker" style="
         width: 100%;
         padding: 18px;
         border-radius: 12px;
@@ -61,7 +61,7 @@
         margin: 10px 0;
         font-weight: 400;
         box-shadow: 0 2px 8px rgba(36,202,104,0.2);
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns=" http:="" www.w3.org="" svg"="" width="24" height="24" viewbox="0 0 24 24">');
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%2324ca68"><path d="M7 10l5 5 5-5z"/></svg>');
         background-repeat: no-repeat;
         background-position: right 12px center;
         background-size: 20px;
@@ -103,16 +103,16 @@
 </div>
 
 <script>
-document.getElementById('donationPicker').addEventListener('change', function() {
+// Script atualizado para pegar o ID correto
+document.getElementById('mainPagePicker').addEventListener('change', function() {
     if(this.value) {
-        // Abre o modal em vez de redirecionar
         const donationModal = document.getElementById('donationModal');
-        const picker = donationModal.querySelector('#donationPicker');
+        // Agora busca o select DO MODAL pelo novo ID
+        const picker = document.getElementById('modalDonationPicker');
         
-        // Define o valor selecionado no modal
+        // Passa o valor da home para o modal
         picker.value = this.value;
         
-        // Abre o modal
         donationModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -621,7 +621,7 @@ document.getElementById('donationPicker').addEventListener('change', function() 
           <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
             Selecione o valor da doação *
           </label>
-          <select id="donationPicker" style="
+          <select id="modalDonationPicker" style="
             width: 100%;
             padding: 18px;
             border-radius: 12px;
@@ -800,7 +800,8 @@ document.getElementById('donationPicker').addEventListener('change', function() 
       const donationButtons = document.querySelectorAll('.donation-button');
       const donationModal = document.getElementById('donationModal');
       const closeModalBtn = document.getElementById('closeModal');
-      const picker = document.getElementById('donationPicker');
+      // AQUI: Pegando o picker DO MODAL pelo novo ID
+      const picker = document.getElementById('modalDonationPicker');
       const generateBtn = document.getElementById('generatePixBtn');
       const donorName = document.getElementById('donorName');
       const donorEmail = document.getElementById('donorEmail');
