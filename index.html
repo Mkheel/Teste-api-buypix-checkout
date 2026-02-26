@@ -690,33 +690,36 @@ document.getElementById('donationPicker').addEventListener('change', function() 
         font-family: 'Segoe UI', Roboto, sans-serif;
         box-shadow: 0 4px 12px rgba(36, 202, 104, 0.3);
       " onmouseover="this.style.backgroundColor='#1da854'" onmouseout="this.style.backgroundColor='#24ca68'">
-        Gerar Código PIX COPIA E COLA
+        Gerar Código PIX
       </button>
 
       <!-- Área de resultado do PIX (aparece após gerar) -->
       <div id="pixResultArea" style="display: none; margin-bottom: 20px;">
-        <div style="background: #f0f9f0; padding: 20px; border-radius: 12px; border: 2px solid #24ca68; text-align: center;">
-          <p style="margin: 0 0 15px 0; color: #1da854; font-weight: 600; font-size: 16px;">
-            ✅ Código PIX gerado com sucesso!
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px solid #ddd; text-align: center;">
+          <!-- QR Code em cima, tamanho reduzido -->
+          <div style="margin-bottom: 20px;">
+            <img id="qrCodeImage" style="width: 180px; height: 180px; display: block; margin: 0 auto;">
+          </div>
+          
+          <p style="margin: 0 0 8px 0; color: #555; font-size: 14px; text-align: left;">
+            Código PIX (copia e cola):
           </p>
-          <p style="margin: 0 0 10px 0; color: #555; font-size: 14px;">
-            Copie o código PIX abaixo e cole no seu banco:
-          </p>
-          <textarea id="pixCodeTextarea" rows="4" readonly style="
-            width: 100%;
-            padding: 15px;
-            border-radius: 8px;
-            border: 1px solid #24ca68;
+          <div style="
             background: #fff;
-            color: #333;
-            font-size: 13px;
-            font-family: monospace;
-            resize: none;
-            box-sizing: border-box;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 12px;
             margin-bottom: 15px;
-          "></textarea>
+            font-family: monospace;
+            font-size: 13px;
+            word-break: break-all;
+            text-align: left;
+            color: #333;
+          " id="pixCodeText"></div>
+          
           <button id="copyPixButton" style="
-            padding: 12px 25px;
+            width: 100%;
+            padding: 14px;
             background: #24ca68;
             color: white;
             border: none;
@@ -727,10 +730,10 @@ document.getElementById('donationPicker').addEventListener('change', function() 
             transition: all 0.3s;
             font-family: 'Segoe UI', Roboto, sans-serif;
           " onmouseover="this.style.backgroundColor='#1da854'" onmouseout="this.style.backgroundColor='#24ca68'">
-            Copiar Código PIX COPIA E COLA
+            Copiar Código PIX
           </button>
-          <p style="margin: 15px 0 0 0; color: #666; font-size: 12px;">
-            O código PIX é válido por 30 minutos.
+          <p style="margin: 15px 0 0 0; color: #999; font-size: 12px;">
+            Código válido por 30 minutos
           </p>
         </div>
       </div>
@@ -761,7 +764,7 @@ document.getElementById('donationPicker').addEventListener('change', function() 
         border-radius: 8px;
         line-height: 1.5;
       ">
-        Após clicar em "Gerar Código PIX", a doação será criada e o código PIX COPIA E COLA será gerado.
+        Após clicar em "Gerar Código PIX", a doação será criada e o código PIX será gerado.
       </p>
     </div>
   </div>
@@ -824,7 +827,8 @@ document.getElementById('donationPicker').addEventListener('change', function() 
       const donorEmail = document.getElementById('donorEmail');
       const anonymousCheckbox = document.getElementById('anonymousCheckbox');
       const pixResultArea = document.getElementById('pixResultArea');
-      const pixCodeTextarea = document.getElementById('pixCodeTextarea');
+      const qrCodeImage = document.getElementById('qrCodeImage');
+      const pixCodeText = document.getElementById('pixCodeText');
       const copyPixButton = document.getElementById('copyPixButton');
       
       // Elementos do campo de mensagem
@@ -835,23 +839,23 @@ document.getElementById('donationPicker').addEventListener('change', function() 
         donorName.value = '';
         donorEmail.value = '';
         anonymousCheckbox.checked = false;
-        picker.value = ''; // reseta o select para a opção padrão "Escolha um valor"
+        picker.value = '';
         if (donorMessage) {
           donorMessage.value = '';
           updateMessageField();
         }
         pixResultArea.style.display = 'none';
         generateBtn.disabled = false;
-        generateBtn.textContent = 'Gerar Código PIX COPIA E COLA';
+        generateBtn.textContent = 'Gerar Código PIX';
         generateBtn.style.opacity = '1';
       }
 
       // Função para atualizar a aparência do campo de mensagem
       function updateMessageField() {
-        if (donorMessage.value.trim() !== '') {
+        if (donorMessage && donorMessage.value.trim() !== '') {
           donorMessage.style.borderColor = '#24ca68';
           donorMessage.style.backgroundColor = '#e8f8f0';
-        } else {
+        } else if (donorMessage) {
           donorMessage.style.borderColor = '#ddd';
           donorMessage.style.backgroundColor = '#fff';
         }
@@ -866,10 +870,10 @@ document.getElementById('donationPicker').addEventListener('change', function() 
       
       let isProcessing = false;
 
-      // Abrir modal - sempre resetar e exibir
+      // Abrir modal
       donationButtons.forEach(button => {
         button.addEventListener('click', function() {
-          resetModalFields(); // reseta todos os campos antes de abrir
+          resetModalFields();
           donationModal.style.display = 'flex';
           document.body.style.overflow = 'hidden';
         });
@@ -878,34 +882,32 @@ document.getElementById('donationPicker').addEventListener('change', function() 
       // Fechar modal (botão X)
       closeModalBtn.addEventListener('click', closeModal);
 
-      // Fechar ao clicar no fundo (overlay) apenas se for clique simples (não arrasto)
-      let mouseDownOnOverlay = false;
-      donationModal.addEventListener('mousedown', function(e) {
+      // Fechar ao clicar no fundo
+      donationModal.addEventListener('click', function(e) {
         if (e.target === donationModal) {
-          mouseDownOnOverlay = true;
-        } else {
-          mouseDownOnOverlay = false;
-        }
-      });
-      donationModal.addEventListener('mouseup', function(e) {
-        if (e.target === donationModal && mouseDownOnOverlay) {
           closeModal();
         }
-        mouseDownOnOverlay = false;
-      });
-      // Garantir que se o mouse sair do overlay antes do mouseup, não feche
-      donationModal.addEventListener('mouseleave', function() {
-        mouseDownOnOverlay = false;
       });
 
+      // BOTÃO VOLTAR DO CELULAR - AGORA FECHA O MODAL
+      window.addEventListener('popstate', function(e) {
+        if (donationModal.style.display === 'flex') {
+          e.preventDefault();
+          closeModal();
+        }
+      });
+
+      // Tecla ESC
       document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && donationModal.style.display === 'flex') closeModal();
+        if (e.key === 'Escape' && donationModal.style.display === 'flex') {
+          closeModal();
+        }
       });
 
       function closeModal() {
         donationModal.style.display = 'none';
         document.body.style.overflow = 'auto';
-        resetModalFields(); // Adicionado: reseta os campos ao fechar também
+        resetModalFields();
       }
 
       // Gerar PIX
@@ -949,7 +951,12 @@ document.getElementById('donationPicker').addEventListener('change', function() 
           const result = await response.json();
 
           if (result.success) {
-            pixCodeTextarea.value = result.data.pix_qr_code || 'Código PIX gerado.';
+            // Exibir QR Code (imagem)
+            qrCodeImage.src = result.data.pix_qr_code_base64;
+            
+            // Exibir código copia e cola (texto)
+            pixCodeText.textContent = result.data.pix_code || 'Código PIX gerado.';
+            
             pixResultArea.style.display = 'block';
             pixResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
@@ -962,7 +969,7 @@ document.getElementById('donationPicker').addEventListener('change', function() 
               });
             }
 
-            generateBtn.textContent = '✅ Código PIX gerado com sucesso!';
+            generateBtn.textContent = 'Código PIX gerado com sucesso';
           } else {
             alert('Erro: ' + (result.message || 'Não foi possível criar a doação.'));
             generateBtn.textContent = originalText;
@@ -980,30 +987,22 @@ document.getElementById('donationPicker').addEventListener('change', function() 
         }
       });
 
-      // Copiar código PIX
+      // Copiar código PIX (texto)
       copyPixButton.addEventListener('click', function() {
-        if (!pixCodeTextarea.value) return;
-        pixCodeTextarea.select();
-        pixCodeTextarea.setSelectionRange(0, 99999);
-        try {
-          navigator.clipboard.writeText(pixCodeTextarea.value).then(() => {
-            const originalText = copyPixButton.textContent;
-            copyPixButton.textContent = '✅ Copiado!';
-            copyPixButton.style.backgroundColor = '#1da854';
-            setTimeout(() => {
-              copyPixButton.textContent = originalText;
-              copyPixButton.style.backgroundColor = '#24ca68';
-            }, 2000);
-          });
-        } catch (err) {
-          document.execCommand('copy');
-          copyPixButton.textContent = '✅ Copiado!';
+        const codeToCopy = pixCodeText.textContent;
+        if (!codeToCopy) return;
+        
+        navigator.clipboard.writeText(codeToCopy).then(() => {
+          const originalText = copyPixButton.textContent;
+          copyPixButton.textContent = 'Copiado!';
           copyPixButton.style.backgroundColor = '#1da854';
           setTimeout(() => {
-            copyPixButton.textContent = 'Copiar Código PIX COPIA E COLA';
+            copyPixButton.textContent = originalText;
             copyPixButton.style.backgroundColor = '#24ca68';
           }, 2000);
-        }
+        }).catch(() => {
+          alert('Não foi possível copiar. Selecione o código manualmente.');
+        });
       });
 
       function isValidEmail(email) {
@@ -1015,3 +1014,4 @@ document.getElementById('donationPicker').addEventListener('change', function() 
 </script>
 
 </body></html>
+
