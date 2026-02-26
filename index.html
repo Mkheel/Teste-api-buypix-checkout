@@ -955,7 +955,7 @@ document.getElementById('donationPicker').addEventListener('change', function() 
             qrCodeImage.src = result.data.pix_qr_code_base64;
             
             // Exibir código copia e cola (texto)
-            pixCodeText.textContent = result.data.pix_code || 'Código PIX gerado.';
+            pixCodeText.textContent = result.data.pix_qr_code || 'Código PIX gerado.';
             
             pixResultArea.style.display = 'block';
             pixResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1014,4 +1014,5 @@ document.getElementById('donationPicker').addEventListener('change', function() 
 </script>
 
 </body></html>
+
 
