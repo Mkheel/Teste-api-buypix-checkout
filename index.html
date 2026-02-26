@@ -3,15 +3,11 @@
   <title>Lar Monte das Oliveiras - Doe Agora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-PWDJKMGH');</script>
-  <!-- End Google Tag Manager -->
-
-  <!-- Fontes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -20,11 +16,8 @@
 </head>
 
 <body>
-  <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PWDJKMGH"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
-  <!-- End Google Tag Manager (noscript) -->
-
   <main class="page">
     
     <section class="header-clean" aria-label="Logo">
@@ -53,8 +46,7 @@
         </video>
       </div>
 
-      <!-- Picker Estilo Mobile - Versão Atualizada -->
-<div style="max-width: 500px; margin: 20px auto; padding: 15px; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+      <div style="max-width: 500px; margin: 20px auto; padding: 15px; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
     <select 2000="" id="donationPicker" style="
         width: 100%;
         padding: 18px;
@@ -96,7 +88,6 @@
         <option value="1000">R$ 1000</option>
     </select>
 
-    <!-- Texto informativo mantido -->
     <p style="
         font-size: 14px;
         color: #24ca68;
@@ -507,8 +498,7 @@ document.getElementById('donationPicker').addEventListener('change', function() 
     </footer>
   </main>
 
-  <!-- Modal de Doação (versão BuyPix) -->
-<div id="donationModal" style="
+  <div id="donationModal" style="
   display: none;
   position: fixed;
   top: 0;
@@ -556,9 +546,7 @@ document.getElementById('donationPicker').addEventListener('change', function() 
     </div>
 
     <div style="padding: 25px;">
-      <!-- Formulário para ativar autofill -->
       <form id="donationForm" method="post" novalidate style="margin:0; padding:0;" autocomplete="on">
-        <!-- Campos de identificação -->
         <div style="margin-bottom: 20px;">
           <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
             Seu nome completo *
@@ -593,7 +581,6 @@ document.getElementById('donationPicker').addEventListener('change', function() 
             transition: all 0.3s;
           " onfocus="this.style.borderColor='#24ca68'" onblur="this.style.borderColor='#ddd'">
 
-          <!-- Campo de mensagem (visual) -->
           <div style="margin-top: 15px; position: relative;">
             <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
               Deixe uma mensagem de apoio (opcional)
@@ -619,7 +606,6 @@ document.getElementById('donationPicker').addEventListener('change', function() 
             </p>
           </div>
 
-          <!-- Checkbox de anônimo com texto explicativo (apenas visual) -->
           <div style="display: flex; align-items: center; margin-top: 15px; flex-wrap: wrap;">
             <input type="checkbox" id="anonymousCheckbox" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
             <label for="anonymousCheckbox" style="font-size: 14px; color: #666; cursor: pointer;">
@@ -631,7 +617,6 @@ document.getElementById('donationPicker').addEventListener('change', function() 
           </div>
         </div>
 
-        <!-- Select de valor -->
         <div style="margin-bottom: 25px;">
           <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
             Selecione o valor da doação *
@@ -672,10 +657,7 @@ document.getElementById('donationPicker').addEventListener('change', function() 
             <option value="1000">R$ 1000</option>
           </select>
         </div>
-      </form> <!-- Fim do formulário -->
-
-      <!-- Botão Gerar PIX (fora do form para não submeter acidentalmente) -->
-      <button id="generatePixBtn" style="
+      </form> <button id="generatePixBtn" style="
         width: 100%;
         padding: 18px;
         background: #24ca68;
@@ -693,10 +675,8 @@ document.getElementById('donationPicker').addEventListener('change', function() 
         Gerar Código PIX
       </button>
 
-      <!-- Área de resultado do PIX (aparece após gerar) -->
       <div id="pixResultArea" style="display: none; margin-bottom: 20px;">
         <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px solid #ddd; text-align: center;">
-          <!-- QR Code em cima, tamanho reduzido -->
           <div style="margin-bottom: 20px;">
             <img id="qrCodeImage" style="width: 180px; height: 180px; display: block; margin: 0 auto;">
           </div>
@@ -738,7 +718,6 @@ document.getElementById('donationPicker').addEventListener('change', function() 
         </div>
       </div>
 
-      <!-- TUTORIAL MOVIDO PARA BAIXO -->
       <div style="margin-top: 25px;">
         <h4 style="margin: 0 0 15px 0; color: #333; font-size: 16px; font-weight: 600;">Como realizar o pagamento:</h4>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #24ca68;">
@@ -954,8 +933,8 @@ document.getElementById('donationPicker').addEventListener('change', function() 
             // Exibir QR Code (imagem)
             qrCodeImage.src = result.data.pix_qr_code_base64;
             
-            // Exibir código copia e cola (texto)
-            pixCodeText.textContent = result.data.pix_qr_code || 'Código PIX gerado.';
+            // CORREÇÃO: Agora verifica pix_code OU pix_qr_code para compatibilidade
+            pixCodeText.textContent = result.data.pix_code || result.data.pix_qr_code || 'Erro ao carregar código.';
             
             pixResultArea.style.display = 'block';
             pixResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1014,5 +993,3 @@ document.getElementById('donationPicker').addEventListener('change', function() 
 </script>
 
 </body></html>
-
-
