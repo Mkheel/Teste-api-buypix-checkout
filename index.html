@@ -3,11 +3,15 @@
   <title>Lar Monte das Oliveiras - Doe Agora</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
+  <!-- Google Tag Manager -->
   <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
   new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
   j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
   'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
   })(window,document,'script','dataLayer','GTM-PWDJKMGH');</script>
+  <!-- End Google Tag Manager -->
+
+  <!-- Fontes -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
@@ -16,8 +20,11 @@
 </head>
 
 <body>
+  <!-- Google Tag Manager (noscript) -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PWDJKMGH"
   height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+  <!-- End Google Tag Manager (noscript) -->
+
   <main class="page">
     
     <section class="header-clean" aria-label="Logo">
@@ -46,8 +53,9 @@
         </video>
       </div>
 
-      <div style="max-width: 500px; margin: 20px auto; padding: 15px; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-    <select id="mainPagePicker" style="
+      <!-- Picker Estilo Mobile - Versão Atualizada -->
+<div style="max-width: 500px; margin: 20px auto; padding: 15px; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+    <select 2000="" id="donationPicker" style="
         width: 100%;
         padding: 18px;
         border-radius: 12px;
@@ -61,7 +69,7 @@
         margin: 10px 0;
         font-weight: 400;
         box-shadow: 0 2px 8px rgba(36,202,104,0.2);
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%2324ca68"><path d="M7 10l5 5 5-5z"/></svg>');
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns=" http:="" www.w3.org="" svg"="" width="24" height="24" viewbox="0 0 24 24">');
         background-repeat: no-repeat;
         background-position: right 12px center;
         background-size: 20px;
@@ -88,6 +96,7 @@
         <option value="1000">R$ 1000</option>
     </select>
 
+    <!-- Texto informativo mantido -->
     <p style="
         font-size: 14px;
         color: #24ca68;
@@ -103,16 +112,16 @@
 </div>
 
 <script>
-// Script atualizado para pegar o ID correto
-document.getElementById('mainPagePicker').addEventListener('change', function() {
+document.getElementById('donationPicker').addEventListener('change', function() {
     if(this.value) {
+        // Abre o modal em vez de redirecionar
         const donationModal = document.getElementById('donationModal');
-        // Agora busca o select DO MODAL pelo novo ID
-        const picker = document.getElementById('modalDonationPicker');
+        const picker = donationModal.querySelector('#donationPicker');
         
-        // Passa o valor da home para o modal
+        // Define o valor selecionado no modal
         picker.value = this.value;
         
+        // Abre o modal
         donationModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
@@ -498,7 +507,8 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
     </footer>
   </main>
 
-  <div id="donationModal" style="
+  <!-- Modal de Doação (versão BuyPix) -->
+<div id="donationModal" style="
   display: none;
   position: fixed;
   top: 0;
@@ -546,7 +556,9 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
     </div>
 
     <div style="padding: 25px;">
+      <!-- Formulário para ativar autofill -->
       <form id="donationForm" method="post" novalidate style="margin:0; padding:0;" autocomplete="on">
+        <!-- Campos de identificação -->
         <div style="margin-bottom: 20px;">
           <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
             Seu nome completo *
@@ -581,6 +593,7 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
             transition: all 0.3s;
           " onfocus="this.style.borderColor='#24ca68'" onblur="this.style.borderColor='#ddd'">
 
+          <!-- Campo de mensagem (visual) -->
           <div style="margin-top: 15px; position: relative;">
             <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
               Deixe uma mensagem de apoio (opcional)
@@ -606,6 +619,7 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
             </p>
           </div>
 
+          <!-- Checkbox de anônimo com texto explicativo (apenas visual) -->
           <div style="display: flex; align-items: center; margin-top: 15px; flex-wrap: wrap;">
             <input type="checkbox" id="anonymousCheckbox" style="margin-right: 10px; width: 18px; height: 18px; cursor: pointer;">
             <label for="anonymousCheckbox" style="font-size: 14px; color: #666; cursor: pointer;">
@@ -617,11 +631,12 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
           </div>
         </div>
 
+        <!-- Select de valor -->
         <div style="margin-bottom: 25px;">
           <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
             Selecione o valor da doação *
           </label>
-          <select id="modalDonationPicker" style="
+          <select id="donationPicker" style="
             width: 100%;
             padding: 18px;
             border-radius: 12px;
@@ -657,7 +672,10 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
             <option value="1000">R$ 1000</option>
           </select>
         </div>
-      </form> <button id="generatePixBtn" style="
+      </form> <!-- Fim do formulário -->
+
+      <!-- Botão Gerar PIX (fora do form para não submeter acidentalmente) -->
+      <button id="generatePixBtn" style="
         width: 100%;
         padding: 18px;
         background: #24ca68;
@@ -675,8 +693,10 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
         Gerar Código PIX
       </button>
 
+      <!-- Área de resultado do PIX (aparece após gerar) -->
       <div id="pixResultArea" style="display: none; margin-bottom: 20px;">
         <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px solid #ddd; text-align: center;">
+          <!-- QR Code em cima, tamanho reduzido -->
           <div style="margin-bottom: 20px;">
             <img id="qrCodeImage" style="width: 180px; height: 180px; display: block; margin: 0 auto;">
           </div>
@@ -718,6 +738,7 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
         </div>
       </div>
 
+      <!-- TUTORIAL MOVIDO PARA BAIXO -->
       <div style="margin-top: 25px;">
         <h4 style="margin: 0 0 15px 0; color: #333; font-size: 16px; font-weight: 600;">Como realizar o pagamento:</h4>
         <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 4px solid #24ca68;">
@@ -800,8 +821,7 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
       const donationButtons = document.querySelectorAll('.donation-button');
       const donationModal = document.getElementById('donationModal');
       const closeModalBtn = document.getElementById('closeModal');
-      // AQUI: Pegando o picker DO MODAL pelo novo ID
-      const picker = document.getElementById('modalDonationPicker');
+      const picker = document.getElementById('donationPicker');
       const generateBtn = document.getElementById('generatePixBtn');
       const donorName = document.getElementById('donorName');
       const donorEmail = document.getElementById('donorEmail');
@@ -934,8 +954,8 @@ document.getElementById('mainPagePicker').addEventListener('change', function() 
             // Exibir QR Code (imagem)
             qrCodeImage.src = result.data.pix_qr_code_base64;
             
-            // CORREÇÃO: Agora verifica pix_code OU pix_qr_code para compatibilidade
-            pixCodeText.textContent = result.data.pix_code || result.data.pix_qr_code || 'Erro ao carregar código.';
+            // ✅ CORREÇÃO: Agora busca pix_code primeiro (que o backend envia)
+            pixCodeText.textContent = result.data.pix_code || result.data.pix_qr_code || 'Código PIX gerado.';
             
             pixResultArea.style.display = 'block';
             pixResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
