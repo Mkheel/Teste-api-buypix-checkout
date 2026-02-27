@@ -105,24 +105,14 @@
       </div>
 
       <script>
-        // Script simples apenas para capturar a mudança no select principal e abrir o modal
         document.getElementById('mainDonationPicker').addEventListener('change', function() {
             if(this.value) {
-                // Abre o modal e passa o valor
-                // Nota: A lógica completa está no final do arquivo, mas vamos despachar um evento customizado ou clicar no botão
-                const donationModal = document.getElementById('donationModal');
                 const modalPicker = document.getElementById('modalDonationPicker');
-                
-                // Define o valor selecionado no modal
                 if(modalPicker) {
                     modalPicker.value = this.value;
                 }
-                
-                // Dispara a lógica de abrir modal (definida no script principal)
                 const openEvent = new CustomEvent('openDonationModal');
                 window.dispatchEvent(openEvent);
-                
-                // Reseta o select principal para não ficar "preso"
                 this.value = "";
             }
         });
@@ -666,7 +656,9 @@
             <option value="1000">R$ 1000</option>
           </select>
         </div>
-      </form> <button id="generatePixBtn" style="
+      </form>
+
+      <button id="generatePixBtn" style="
         width: 100%;
         padding: 18px;
         background: #24ca68;
@@ -704,6 +696,7 @@
             word-break: break-all;
             text-align: left;
             color: #333;
+            user-select: all; /* Facilita seleção manual */
           " id="pixCodeText"></div>
           
           <button id="copyPixButton" style="
@@ -714,16 +707,18 @@
             border: none;
             border-radius: 8px;
             font-size: 15px;
-            font-weight: 600;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             font-family: 'Segoe UI', Roboto, sans-serif;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
-          " onmouseover="this.style.backgroundColor='#1da854'" onmouseout="this.style.backgroundColor='#24ca68'">
-            Copiar Código PIX
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          ">
+            COPIAR CÓDIGO PIX
           </button>
           <p style="margin: 15px 0 0 0; color: #999; font-size: 12px;">
             Código válido por 30 minutos
@@ -764,10 +759,8 @@
 
 <script>
   (function() {
-    // ========== CONFIGURAÇÃO ==========
-    const BACKEND_URL = 'https://api-buypix-production-70a0.up.railway.app'; // ALTERE PARA A URL DO SEU BACKEND BUYPIX
+    const BACKEND_URL = 'https://api-buypix-production-70a0.up.railway.app';
 
-    // Funções de animação existentes (você pode manter as suas)
     const sections = document.querySelectorAll('.js-observe');
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
@@ -808,12 +801,10 @@
       }, 5000);
     }
 
-    // ========== LÓGICA DO MODAL ==========
     document.addEventListener('DOMContentLoaded', function() {
       const donationButtons = document.querySelectorAll('.donation-button');
       const donationModal = document.getElementById('donationModal');
       const closeModalBtn = document.getElementById('closeModal');
-      // Importante: Referência ao Picker DENTRO do modal
       const modalPicker = document.getElementById('modalDonationPicker');
       
       const generateBtn = document.getElementById('generatePixBtn');
@@ -824,16 +815,12 @@
       const qrCodeImage = document.getElementById('qrCodeImage');
       const pixCodeText = document.getElementById('pixCodeText');
       const copyPixButton = document.getElementById('copyPixButton');
-      
-      // Elementos do campo de mensagem
       const donorMessage = document.getElementById('donorMessage');
 
-      // Função para resetar todos os campos do modal
       function resetModalFields() {
         donorName.value = '';
         donorEmail.value = '';
         anonymousCheckbox.checked = false;
-        // modalPicker.value = ''; // Não limpamos o picker para manter o valor se ele veio da home
         if (donorMessage) {
           donorMessage.value = '';
           updateMessageField();
@@ -843,12 +830,11 @@
         generateBtn.textContent = 'Gerar Código PIX';
         generateBtn.style.opacity = '1';
         
-        // Reseta o botão de copiar
-        copyPixButton.textContent = 'Copiar Código PIX';
+        copyPixButton.textContent = 'COPIAR CÓDIGO PIX';
         copyPixButton.style.backgroundColor = '#24ca68';
+        copyPixButton.style.color = 'white';
       }
 
-      // Função para atualizar a aparência do campo de mensagem
       function updateMessageField() {
         if (donorMessage && donorMessage.value.trim() !== '') {
           donorMessage.style.borderColor = '#24ca68';
@@ -868,21 +854,16 @@
       
       let isProcessing = false;
 
-      // Função Centralizada de Abrir Modal
       function openModal() {
-        // Empurra um estado no histórico para o botão voltar funcionar
         history.pushState({modalOpen: true}, '', '#doar');
-        
         donationModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
       }
 
-      // Listener para o evento customizado vindo do picker da Home
       window.addEventListener('openDonationModal', function() {
           openModal();
       });
 
-      // Abrir modal pelos botões normais
       donationButtons.forEach(button => {
         button.addEventListener('click', function() {
           resetModalFields();
@@ -890,49 +871,37 @@
         });
       });
 
-      // Função Centralizada de Fechar Modal
       function closeModal() {
         donationModal.style.display = 'none';
         document.body.style.overflow = 'auto';
         resetModalFields();
-        
-        // Se houver um estado no histórico (#doar), voltamos para limpar a URL
-        // Isso evita que o usuário tenha que clicar em voltar 2x
         if (location.hash === '#doar') {
             history.back(); 
         }
       }
 
-      // Fechar modal (botão X)
       closeModalBtn.addEventListener('click', closeModal);
 
-      // Fechar ao clicar no fundo
       donationModal.addEventListener('click', function(e) {
         if (e.target === donationModal) {
           closeModal();
         }
       });
 
-      // CORREÇÃO DO BOTÃO VOLTAR DO CELULAR (History API)
       window.addEventListener('popstate', function(e) {
-        // Se o usuário clicou em voltar, o hash sumiu.
-        // Se o modal ainda estiver visível, apenas o escondemos.
         if (donationModal.style.display === 'flex') {
           donationModal.style.display = 'none';
           document.body.style.overflow = 'auto';
         }
       });
 
-      // Tecla ESC
       document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape' && donationModal.style.display === 'flex') {
           closeModal();
         }
       });
 
-      // Gerar PIX
       generateBtn.addEventListener('click', async function() {
-        // AGORA PEGAMOS O VALOR CORRETO DO MODAL (modalPicker)
         if (!modalPicker.value) {
           alert('Por favor, selecione um valor para doação.');
           return;
@@ -957,7 +926,7 @@
         generateBtn.disabled = true;
 
         const donationData = {
-          amount: parseFloat(modalPicker.value), // Valor vindo do modal, garantido estar atualizado
+          amount: parseFloat(modalPicker.value),
           customer_name: donorName.value.trim(),
           customer_email: donorEmail.value.trim()
         };
@@ -972,12 +941,8 @@
           const result = await response.json();
 
           if (result.success) {
-            // Exibir QR Code (imagem)
             qrCodeImage.src = result.data.pix_qr_code_base64;
-            
-            // Busca pix_code primeiro
             pixCodeText.textContent = result.data.pix_code || result.data.pix_qr_code || 'Código PIX gerado.';
-            
             pixResultArea.style.display = 'block';
             pixResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
@@ -1008,29 +973,76 @@
         }
       });
 
-      // Copiar código PIX (texto) - COM NOVA ANIMAÇÃO
-      copyPixButton.addEventListener('click', function() {
-        const codeToCopy = pixCodeText.textContent;
-        if (!codeToCopy) return;
+      // ==========================================================
+      // NOVA LÓGICA DE CÓPIA INFALÍVEL
+      // ==========================================================
+      
+      // Função auxiliar que funciona em celulares antigos e webviews de Apps
+      function fallbackCopyTextToClipboard(text) {
+        var textArea = document.createElement("textarea");
+        textArea.value = text;
         
-        navigator.clipboard.writeText(codeToCopy).then(() => {
-          const originalText = 'Copiar Código PIX';
+        // Evita scroll ao focar
+        textArea.style.top = "0";
+        textArea.style.left = "0";
+        textArea.style.position = "fixed";
+        textArea.style.opacity = "0";
+        
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+
+        try {
+          var successful = document.execCommand('copy');
+          return successful;
+        } catch (err) {
+          return false;
+        } else {
+          document.body.removeChild(textArea);
+        }
+        document.body.removeChild(textArea);
+      }
+
+      copyPixButton.addEventListener('click', async function() {
+        const rawText = pixCodeText.textContent;
+        if (!rawText) return;
+
+        // IMPORTANTE: .trim() remove espaços vazios que quebram o PIX em bancos
+        const textToCopy = rawText.trim(); 
+        
+        let success = false;
+        
+        // Tenta método moderno
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          try {
+            await navigator.clipboard.writeText(textToCopy);
+            success = true;
+          } catch (err) {
+            // Se falhar, usa o fallback
+            success = fallbackCopyTextToClipboard(textToCopy);
+          }
+        } else {
+          // Se não tiver suporte, usa fallback direto
+          success = fallbackCopyTextToClipboard(textToCopy);
+        }
+
+        if (success) {
+          const originalText = 'COPIAR CÓDIGO PIX';
           
-          // Muda o texto e a cor
-          copyPixButton.textContent = 'Copiado com Sucesso! ✅';
-          copyPixButton.style.backgroundColor = '#1da854'; // Verde mais escuro
-          copyPixButton.style.transform = 'scale(1.02)';
+          // Feedback Visual Forte (Verde Escuro)
+          this.textContent = 'COPIADO';
+          this.style.backgroundColor = '#155724'; // Verde Escuro Forte
+          this.style.color = '#ffffff';
+          this.style.transform = 'scale(1.02)';
           
-          // Volta ao normal depois de 3 segundos
           setTimeout(() => {
-            copyPixButton.textContent = originalText;
-            copyPixButton.style.backgroundColor = '#24ca68';
-            copyPixButton.style.transform = 'scale(1)';
+            this.textContent = originalText;
+            this.style.backgroundColor = '#24ca68'; // Volta ao original
+            this.style.transform = 'scale(1)';
           }, 3000);
-          
-        }).catch(() => {
-          alert('Não foi possível copiar. Selecione o código manualmente.');
-        });
+        } else {
+          alert('Seu dispositivo bloqueou a cópia automática. Por favor, selecione o código manualmente e copie.');
+        }
       });
 
       function isValidEmail(email) {
