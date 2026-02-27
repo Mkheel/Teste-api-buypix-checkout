@@ -678,10 +678,16 @@
 
       <div id="pixResultArea" style="display: none; margin-bottom: 20px;">
         <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px solid #ddd; text-align: center;">
-          <div style="margin-bottom: 20px;">
+          <div style="margin-bottom: 15px;">
             <img id="qrCodeImage" style="width: 180px; height: 180px; display: block; margin: 0 auto;">
           </div>
           
+          <div id="pixTimer" style="margin-bottom: 20px; display:none;">
+            <span style="background: #fff3cd; color: #856404; border: 1px solid #ffeeba; padding: 6px 14px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block;">
+               ⏳ Expira em: <span id="timeCount">30:00</span>
+            </span>
+          </div>
+
           <p style="margin: 0 0 8px 0; color: #555; font-size: 14px; text-align: left;">
             Código PIX (copia e cola):
           </p>
@@ -760,6 +766,7 @@
 <script>
   (function() {
     const BACKEND_URL = 'https://api-buypix-production-70a0.up.railway.app';
+    let timerInterval; // Variável para o cronômetro
 
     // Se o JS quebrar, o site não aparece. Correção feita para garantir que rode.
     const sections = document.querySelectorAll('.js-observe');
@@ -834,6 +841,32 @@
         copyPixButton.textContent = 'COPIAR CÓDIGO PIX';
         copyPixButton.style.backgroundColor = '#24ca68';
         copyPixButton.style.color = 'white';
+        
+        // Reset do timer ao fechar modal
+        clearInterval(timerInterval);
+        document.getElementById('pixTimer').style.display = 'none';
+      }
+      
+      // Função para iniciar o cronômetro
+      function startTimer(duration, display) {
+          var timer = duration, minutes, seconds;
+          clearInterval(timerInterval);
+          document.getElementById('pixTimer').style.display = 'block';
+          
+          timerInterval = setInterval(function () {
+              minutes = parseInt(timer / 60, 10);
+              seconds = parseInt(timer % 60, 10);
+
+              minutes = minutes < 10 ? "0" + minutes : minutes;
+              seconds = seconds < 10 ? "0" + seconds : seconds;
+
+              display.textContent = minutes + ":" + seconds;
+
+              if (--timer < 0) {
+                  clearInterval(timerInterval);
+                  display.textContent = "Expirado";
+              }
+          }, 1000);
       }
 
       function updateMessageField() {
@@ -946,6 +979,9 @@
             pixCodeText.textContent = result.data.pix_code || result.data.pix_qr_code || 'Código PIX gerado.';
             pixResultArea.style.display = 'block';
             pixResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            
+            // INICIA O CRONÔMETRO (30 minutos)
+            startTimer(30 * 60, document.querySelector('#timeCount'));
 
             if (typeof pintrk === 'function') {
               pintrk('track', 'checkout', {
@@ -1053,5 +1089,3 @@
 </script>
 
 </body></html>
-
-
