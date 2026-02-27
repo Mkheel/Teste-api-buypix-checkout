@@ -53,9 +53,9 @@
         </video>
       </div>
 
-      <!-- Picker Estilo Mobile - Versão Atualizada -->
+      <!-- Picker Estilo Mobile - Versão Atualizada com ID único -->
 <div style="max-width: 500px; margin: 20px auto; padding: 15px; background: #f8f9fa; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-    <select 2000="" id="donationPicker" style="
+    <select id="mainDonationPicker" style="
         width: 100%;
         padding: 18px;
         border-radius: 12px;
@@ -69,18 +69,14 @@
         margin: 10px 0;
         font-weight: 400;
         box-shadow: 0 2px 8px rgba(36,202,104,0.2);
-        background-image: url('data:image/svg+xml;utf8,<svg xmlns=" http:="" www.w3.org="" svg"="" width="24" height="24" viewbox="0 0 24 24">');
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="%2324ca68"><path d="M7 10l5 5 5-5z"/></svg>');
         background-repeat: no-repeat;
         background-position: right 12px center;
         background-size: 20px;
-        font-family: 'Segoe UI', Roboto, -apple-system, sans-serif;
+        font-family: 'Segoe UI', Roboto, sans-serif;
         cursor: pointer;
     ">
-        <option value="" disabled="" selected="" style="
-            color: #999;
-            font-weight: 300;
-            font-style: italic;
-        ">Selecione o valor para doar</option>
+        <option value="" disabled selected>Selecione o valor para doar</option>
         <option value="10">R$ 10</option>
         <option value="20">R$ 20</option>
         <option value="30">R$ 30</option>
@@ -112,18 +108,15 @@
 </div>
 
 <script>
-document.getElementById('donationPicker').addEventListener('change', function() {
+document.getElementById('mainDonationPicker').addEventListener('change', function() {
     if(this.value) {
-        // Abre o modal em vez de redirecionar
         const donationModal = document.getElementById('donationModal');
-        const picker = donationModal.querySelector('#donationPicker');
-        
-        // Define o valor selecionado no modal
-        picker.value = this.value;
-        
-        // Abre o modal
+        const modalPicker = donationModal.querySelector('#donationPicker');
+        modalPicker.value = this.value;
         donationModal.style.display = 'flex';
         document.body.style.overflow = 'hidden';
+        // Adiciona um estado no histórico para capturar o botão voltar
+        history.pushState({modal: true}, '');
     }
 });
 </script>
@@ -773,9 +766,9 @@ document.getElementById('donationPicker').addEventListener('change', function() 
 <script>
   (function() {
     // ========== CONFIGURAÇÃO ==========
-    const BACKEND_URL = 'https://api-buypix-production-70a0.up.railway.app'; // ALTERE PARA A URL DO SEU BACKEND BUYPIX
+    const BACKEND_URL = 'https://api-buypix-production-70a0.up.railway.app';
 
-    // Funções de animação existentes (você pode manter as suas)
+    // Funções de animação existentes
     const sections = document.querySelectorAll('.js-observe');
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
@@ -831,10 +824,8 @@ document.getElementById('donationPicker').addEventListener('change', function() 
       const pixCodeText = document.getElementById('pixCodeText');
       const copyPixButton = document.getElementById('copyPixButton');
       
-      // Elementos do campo de mensagem
       const donorMessage = document.getElementById('donorMessage');
 
-      // Função para resetar todos os campos do modal
       function resetModalFields() {
         donorName.value = '';
         donorEmail.value = '';
@@ -850,7 +841,6 @@ document.getElementById('donationPicker').addEventListener('change', function() 
         generateBtn.style.opacity = '1';
       }
 
-      // Função para atualizar a aparência do campo de mensagem
       function updateMessageField() {
         if (donorMessage && donorMessage.value.trim() !== '') {
           donorMessage.style.borderColor = '#24ca68';
@@ -870,47 +860,43 @@ document.getElementById('donationPicker').addEventListener('change', function() 
       
       let isProcessing = false;
 
-      // Abrir modal
+      function openModal() {
+        resetModalFields();
+        donationModal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        history.pushState({modal: true}, ''); // Adiciona estado para capturar o botão voltar
+      }
+
       donationButtons.forEach(button => {
-        button.addEventListener('click', function() {
-          resetModalFields();
-          donationModal.style.display = 'flex';
-          document.body.style.overflow = 'hidden';
-        });
-      });
-
-      // Fechar modal (botão X)
-      closeModalBtn.addEventListener('click', closeModal);
-
-      // Fechar ao clicar no fundo
-      donationModal.addEventListener('click', function(e) {
-        if (e.target === donationModal) {
-          closeModal();
-        }
-      });
-
-      // BOTÃO VOLTAR DO CELULAR - AGORA FECHA O MODAL
-      window.addEventListener('popstate', function(e) {
-        if (donationModal.style.display === 'flex') {
-          e.preventDefault();
-          closeModal();
-        }
-      });
-
-      // Tecla ESC
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape' && donationModal.style.display === 'flex') {
-          closeModal();
-        }
+        button.addEventListener('click', openModal);
       });
 
       function closeModal() {
         donationModal.style.display = 'none';
         document.body.style.overflow = 'auto';
         resetModalFields();
+        if (history.state && history.state.modal) {
+          history.back(); // Remove o estado do histórico sem sair da página
+        }
       }
 
-      // Gerar PIX
+      closeModalBtn.addEventListener('click', closeModal);
+
+      donationModal.addEventListener('click', function(e) {
+        if (e.target === donationModal) closeModal();
+      });
+
+      window.addEventListener('popstate', function(e) {
+        if (donationModal.style.display === 'flex') {
+          closeModal();
+          e.preventDefault();
+        }
+      });
+
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && donationModal.style.display === 'flex') closeModal();
+      });
+
       generateBtn.addEventListener('click', async function() {
         if (!picker.value) {
           alert('Por favor, selecione um valor para doação.');
@@ -951,12 +937,8 @@ document.getElementById('donationPicker').addEventListener('change', function() 
           const result = await response.json();
 
           if (result.success) {
-            // Exibir QR Code (imagem)
             qrCodeImage.src = result.data.pix_qr_code_base64;
-            
-            // ✅ CORREÇÃO: Agora busca pix_code primeiro (que o backend envia)
             pixCodeText.textContent = result.data.pix_code || result.data.pix_qr_code || 'Código PIX gerado.';
-            
             pixResultArea.style.display = 'block';
             pixResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
@@ -987,7 +969,6 @@ document.getElementById('donationPicker').addEventListener('change', function() 
         }
       });
 
-      // Copiar código PIX (texto)
       copyPixButton.addEventListener('click', function() {
         const codeToCopy = pixCodeText.textContent;
         if (!codeToCopy) return;
@@ -996,10 +977,12 @@ document.getElementById('donationPicker').addEventListener('change', function() 
           const originalText = copyPixButton.textContent;
           copyPixButton.textContent = 'Copiado!';
           copyPixButton.style.backgroundColor = '#1da854';
+          copyPixButton.style.transform = 'scale(0.95)';
           setTimeout(() => {
             copyPixButton.textContent = originalText;
             copyPixButton.style.backgroundColor = '#24ca68';
-          }, 2000);
+            copyPixButton.style.transform = 'scale(1)';
+          }, 1500);
         }).catch(() => {
           alert('Não foi possível copiar. Selecione o código manualmente.');
         });
