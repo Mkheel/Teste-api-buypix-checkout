@@ -110,6 +110,9 @@
                 const modalPicker = document.getElementById('modalDonationPicker');
                 if(modalPicker) {
                     modalPicker.value = this.value;
+                    // Dispara evento de mudança manual para ativar a lógica do CPF
+                    const event = new Event('change');
+                    modalPicker.dispatchEvent(event);
                 }
                 const openEvent = new CustomEvent('openDonationModal');
                 window.dispatchEvent(openEvent);
@@ -580,6 +583,27 @@
             transition: all 0.3s;
           " onfocus="this.style.borderColor='#24ca68'" onblur="this.style.borderColor='#ddd'">
 
+          <div id="cpfContainer" style="display: none; margin-top: 15px;">
+            <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
+              Seu CPF/CNPJ *
+            </label>
+            <input type="text" id="donorCpf" name="cpf" placeholder="Digite seu CPF ou CNPJ" style="
+              width: 100%;
+              padding: 15px;
+              border-radius: 12px;
+              border: 2px solid #ddd;
+              font-size: 15px;
+              background: #fff;
+              color: #555;
+              box-sizing: border-box;
+              font-family: 'Segoe UI', Roboto, sans-serif;
+              transition: all 0.3s;
+            " onfocus="this.style.borderColor='#24ca68'" onblur="this.style.borderColor='#ddd'">
+            <span style="display: block; font-size: 12px; color: #999; margin-top: 5px; font-style: italic;">
+              (Obrigatório para doações a partir de R$ 500)
+            </span>
+          </div>
+
           <div style="margin-top: 15px; position: relative;">
             <label style="display: block; margin-bottom: 8px; color: #555; font-size: 14px; font-weight: 500;">
               Deixe uma mensagem de apoio (opcional)
@@ -766,9 +790,8 @@
 <script>
   (function() {
     const BACKEND_URL = 'https://api-buypix-production-70a0.up.railway.app';
-    let timerInterval; // Variável para o cronômetro
+    let timerInterval;
 
-    // Se o JS quebrar, o site não aparece. Correção feita para garantir que rode.
     const sections = document.querySelectorAll('.js-observe');
     const observer = new IntersectionObserver((entries, obs) => {
       entries.forEach(entry => {
@@ -818,6 +841,11 @@
       const generateBtn = document.getElementById('generatePixBtn');
       const donorName = document.getElementById('donorName');
       const donorEmail = document.getElementById('donorEmail');
+      
+      // NOVAS VARIÁVEIS PARA O SISTEMA DE CPF
+      const cpfContainer = document.getElementById('cpfContainer');
+      const donorCpf = document.getElementById('donorCpf');
+      
       const anonymousCheckbox = document.getElementById('anonymousCheckbox');
       const pixResultArea = document.getElementById('pixResultArea');
       const qrCodeImage = document.getElementById('qrCodeImage');
@@ -825,9 +853,22 @@
       const copyPixButton = document.getElementById('copyPixButton');
       const donorMessage = document.getElementById('donorMessage');
 
+      // LÓGICA PARA EXIBIR/OCULTAR CPF BASEADO NO VALOR
+      modalPicker.addEventListener('change', function() {
+        const val = parseFloat(this.value);
+        if (val >= 500) {
+          cpfContainer.style.display = 'block';
+        } else {
+          cpfContainer.style.display = 'none';
+          donorCpf.value = ''; // Limpa se ocultar
+        }
+      });
+
       function resetModalFields() {
         donorName.value = '';
         donorEmail.value = '';
+        donorCpf.value = '';
+        cpfContainer.style.display = 'none'; // Reseta visibilidade
         anonymousCheckbox.checked = false;
         if (donorMessage) {
           donorMessage.value = '';
@@ -842,12 +883,10 @@
         copyPixButton.style.backgroundColor = '#24ca68';
         copyPixButton.style.color = 'white';
         
-        // Reset do timer ao fechar modal
         clearInterval(timerInterval);
         document.getElementById('pixTimer').style.display = 'none';
       }
       
-      // Função para iniciar o cronômetro
       function startTimer(duration, display) {
           var timer = duration, minutes, seconds;
           clearInterval(timerInterval);
@@ -940,6 +979,9 @@
           alert('Por favor, selecione um valor para doação.');
           return;
         }
+        
+        const amountVal = parseFloat(modalPicker.value);
+
         if (!donorName.value.trim()) {
           alert('Por favor, informe seu nome.');
           donorName.focus();
@@ -949,6 +991,15 @@
           alert('Por favor, informe um e-mail válido.');
           donorEmail.focus();
           return;
+        }
+
+        // VALIDAÇÃO DE CPF/CNPJ SE VALOR >= 500
+        if (amountVal >= 500) {
+          if (!donorCpf.value.trim()) {
+            alert('Para doações acima de R$ 500, o CPF/CNPJ é obrigatório.');
+            donorCpf.focus();
+            return;
+          }
         }
         
         if (isProcessing) return;
@@ -960,9 +1011,11 @@
         generateBtn.disabled = true;
 
         const donationData = {
-          amount: parseFloat(modalPicker.value),
+          amount: amountVal,
           customer_name: donorName.value.trim(),
-          customer_email: donorEmail.value.trim()
+          customer_email: donorEmail.value.trim(),
+          // Envia CPF apenas se preenchido, removendo caracteres não numéricos
+          customer_cpf: donorCpf.value.trim() ? donorCpf.value.replace(/\D/g, '') : null
         };
 
         try {
@@ -980,7 +1033,6 @@
             pixResultArea.style.display = 'block';
             pixResultArea.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             
-            // INICIA O CRONÔMETRO (30 minutos)
             startTimer(30 * 60, document.querySelector('#timeCount'));
 
             if (typeof pintrk === 'function') {
@@ -1010,20 +1062,13 @@
         }
       });
 
-      // ==========================================================
-      // FUNÇÃO CORRIGIDA - CÓPIA INFALÍVEL SEM ERRO DE SINTAXE
-      // ==========================================================
-      
       function fallbackCopyTextToClipboard(text) {
         var textArea = document.createElement("textarea");
         textArea.value = text;
-        
-        // Evita scroll ao focar
         textArea.style.top = "0";
         textArea.style.left = "0";
         textArea.style.position = "fixed";
         textArea.style.opacity = "0";
-        
         document.body.appendChild(textArea);
         textArea.focus();
         textArea.select();
@@ -1042,37 +1087,30 @@
         const rawText = pixCodeText.textContent;
         if (!rawText) return;
 
-        // Limpa espaços vazios
         const textToCopy = rawText.trim(); 
-        
         let success = false;
         
-        // Tenta método moderno
         if (navigator.clipboard && navigator.clipboard.writeText) {
           try {
             await navigator.clipboard.writeText(textToCopy);
             success = true;
           } catch (err) {
-            // Se falhar, usa o fallback
             success = fallbackCopyTextToClipboard(textToCopy);
           }
         } else {
-          // Se não tiver suporte, usa fallback direto
           success = fallbackCopyTextToClipboard(textToCopy);
         }
 
         if (success) {
           const originalText = 'COPIAR CÓDIGO PIX';
-          
-          // Feedback Visual Forte (Verde Escuro)
           this.textContent = 'COPIADO!';
-          this.style.backgroundColor = '#0d47a1'; // Verde Escuro Forte
+          this.style.backgroundColor = '#0d47a1'; 
           this.style.color = '#ffffff';
           this.style.transform = 'scale(1.02)';
           
           setTimeout(() => {
             this.textContent = originalText;
-            this.style.backgroundColor = '#24ca68'; // Volta ao original
+            this.style.backgroundColor = '#24ca68'; 
             this.style.transform = 'scale(1)';
           }, 3000);
         } else {
@@ -1089,4 +1127,3 @@
 </script>
 
 </body></html>
-
